@@ -1,44 +1,42 @@
-import React, { useEffect, useState } from "react";
-import { getTodos, addTodo, deleteTodo } from "../api/api";
+import { useEffect, useState } from "react"; 
+import { getTodos, addTodo, deleteTodo } from "../api/todoApi";
+import TodoForm from "../components/TodoForm";
 import TodoItem from "../components/TodoItem";
 
-const Home = () => {
+function Home() {
   const [todos, setTodos] = useState([]);
-  const [task, setTask] = useState("");
 
   useEffect(() => {
-    getTodos().then(res => setTodos(res.data));
+    getTodos().then((res) => setTodos(res.data)).catch(console.error);
   }, []);
 
-  const handleAdd = () => {
-    if (!task.trim()) return;
-    addTodo(task).then(res => {
-      setTodos([...todos, res.data]);
-      setTask("");
-    });
+  const handleAdd = (task) => {
+    addTodo(task).then((res) => setTodos([...todos, res.data]));
   };
 
   const handleDelete = (id) => {
-    deleteTodo(id).then(() => setTodos(todos.filter(t => t.id !== id)));
+    deleteTodo(id).then(() => setTodos(todos.filter((t) => t.id !== id)));
   };
 
   return (
-    <div>
-      <input
-        type="text"
-        placeholder="Enter a task..."
-        value={task}
-        onChange={(e) => setTask(e.target.value)}
-      />
-      <button onClick={handleAdd}>Add</button>
+    <div className="w-full max-w-md mx-auto bg-white/70 backdrop-blur-md shadow-lg rounded-2xl p-6">
+      <h1 className="text-2xl font-bold text-center text-indigo-600 mb-4">
+        📝 My To-Do List
+      </h1>
 
-      <ul>
-        {todos.map(todo => (
-          <TodoItem key={todo.id} todo={todo} onDelete={handleDelete} />
-        ))}
-      </ul>
+      <TodoForm onAdd={handleAdd} />
+
+      <div className="mt-4">
+        {todos.length === 0 ? (
+          <p className="text-gray-500 text-center mt-4">No tasks yet...</p>
+        ) : (
+          todos.map((todo) => (
+            <TodoItem key={todo.id} todo={todo} onDelete={handleDelete} />
+          ))
+        )}
+      </div>
     </div>
   );
-};
+}
 
 export default Home;

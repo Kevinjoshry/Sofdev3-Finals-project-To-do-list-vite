@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react"; 
-import { getTodos, addTodo, deleteTodo } from "../api/todoApi";
+import { useEffect, useState } from "react";
+import { getTodos, addTodo, deleteTodo, updateTodo } from "../api/todoApi";
 import TodoForm from "../components/TodoForm";
 import TodoItem from "../components/TodoItem";
 
@@ -11,11 +11,22 @@ function Home() {
   }, []);
 
   const handleAdd = (task) => {
-    addTodo(task).then((res) => setTodos([...todos, res.data]));
+    addTodo(task).then((res) => setTodos([...todos, { ...res.data, completed: false }]));
   };
 
   const handleDelete = (id) => {
     deleteTodo(id).then(() => setTodos(todos.filter((t) => t.id !== id)));
+  };
+
+  const handleToggleDone = (id) => {
+    const todo = todos.find((t) => t.id === id);
+    updateTodo(id, { completed: !todo.completed }).then(() => {
+      setTodos(
+        todos.map((t) =>
+          t.id === id ? { ...t, completed: !t.completed } : t
+        )
+      );
+    });
   };
 
   return (
@@ -31,7 +42,12 @@ function Home() {
           <p className="text-gray-500 text-center mt-4">No tasks yet...</p>
         ) : (
           todos.map((todo) => (
-            <TodoItem key={todo.id} todo={todo} onDelete={handleDelete} />
+            <TodoItem
+              key={todo.id}
+              todo={todo}
+              onDelete={handleDelete}
+              onToggleDone={handleToggleDone}
+            />
           ))
         )}
       </div>

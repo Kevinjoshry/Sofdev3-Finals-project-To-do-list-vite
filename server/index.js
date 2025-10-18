@@ -26,14 +26,22 @@ app.delete("/api/todos/:id", (req, res) => {
   res.json({ message: "Deleted" });
 });
 
-// UPDATE a todo
+// UPDATE a todo (mark as done / edit text)
 app.put("/api/todos/:id", (req, res) => {
   const { id } = req.params;
-  const { task } = req.body;
-  const todo = todos.find(t => t.id === parseInt(id));
-  if (todo) todo.task = task;
-  res.json(todo);
+  const { task, completed } = req.body;
+
+  const todo = todos.find((t) => t.id === parseInt(id));
+
+  if (todo) {
+    if (task !== undefined) todo.task = task;
+    if (completed !== undefined) todo.completed = completed;
+    return res.json(todo);
+  }
+
+  res.status(404).json({ message: "Not found" });
 });
+
 
 const PORT = 5000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));

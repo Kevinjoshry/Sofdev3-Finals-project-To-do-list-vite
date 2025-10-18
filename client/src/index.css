@@ -2,6 +2,40 @@
 @tailwind components;
 @tailwind utilities;
 
-body {
-  @apply bg-gradient-to-br from-blue-100 to-purple-100 min-h-screen flex justify-center items-center font-sans;
+/* 🎨 Animated gradient background */
+@keyframes movingGradient {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+.bg-animated {
+  background: linear-gradient(-45deg, #a1c4fd, #c2e9fb, #fbc2eb, #fad0c4);
+  background-size: 400% 400%;
+  animation: movingGradient 15s ease infinite;
+}
+
+/* ✅ Checkmark pop animation */
+@keyframes popIn {
+  0% {
+    transform: scale(0);
+    opacity: 0;
+  }
+  60% {
+    transform: scale(1.3);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.animate-pop {
+  animation: popIn 0.25s ease-out;
 }

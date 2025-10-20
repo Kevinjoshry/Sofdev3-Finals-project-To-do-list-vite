@@ -1,47 +1,43 @@
 const express = require("express");
 const cors = require("cors");
+const { PrismaClient } = require("@prisma/client");
 
+const prisma = new PrismaClient();
 const app = express();
+
 app.use(cors());
 app.use(express.json());
 
-let todos = []; // simple in-memory storage
-
-// GET all todos
-app.get("/api/todos", (req, res) => {
+// ✅ Get all todos
+app.get("/api/todos", async (req, res) => {
+  const todos = await prisma.todo.findMany({ orderBy: { id: "desc" } });
   res.json(todos);
 });
 
-// POST add todo
-app.post("/api/todos", (req, res) => {
-  const newTodo = { id: Date.now(), task: req.body.task };
-  todos.push(newTodo);
+// ✅ Add new todo
+app.post("/api/todos", async (req, res) => {
+  const { task } = req.body;
+  const newTodo = await prisma.todo.create({ data: { task } });
   res.json(newTodo);
 });
 
-// DELETE a todo
-app.delete("/api/todos/:id", (req, res) => {
-  const { id } = req.params;
-  todos = todos.filter(t => t.id !== parseInt(id));
+// ✅ Delete a todo
+app.delete("/api/todos/:id", async (req, res) => {
+  const id = parseInt(req.params.id);
+  await prisma.todo.delete({ where: { id } });
   res.json({ message: "Deleted" });
 });
 
-// UPDATE a todo (mark as done / edit text)
-app.put("/api/todos/:id", (req, res) => {
-  const { id } = req.params;
-  const { task, completed } = req.body;
-
-  const todo = todos.find((t) => t.id === parseInt(id));
-
-  if (todo) {
-    if (task !== undefined) todo.task = task;
-    if (completed !== undefined) todo.completed = completed;
-    return res.json(todo);
-  }
-
-  res.status(404).json({ message: "Not found" });
+// ✅ Update a todo (optional: mark as done, etc.)
+app.put("/api/todos/:id", async (req, res) => {
+  const id = parseInt(req.params.id);
+  const { task, done } = req.body;
+  const updated = await prisma.todo.update({
+    where: { id },
+    data: { task, done },
+  });
+  res.json(updated);
 });
-
 
 const PORT = 5000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));

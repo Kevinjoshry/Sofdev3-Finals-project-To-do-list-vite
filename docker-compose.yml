@@ -1,9 +1,15 @@
-version: "3"
+# docker-compose.yml
 services:
   backend:
     build: ./server
     ports:
       - "5000:5000"
+    volumes:
+      - ./server/prisma:/app/prisma        # Persist Prisma schema + migrations
+      - ./server/dev.db:/app/dev.db        # Persist the SQLite database file
+    environment:
+      - DATABASE_URL=file:./prisma/dev.db  # Point Prisma to the persistent file
+
   frontend:
     build: ./client
     ports:

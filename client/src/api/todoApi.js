@@ -1,8 +1,7 @@
 import axios from "axios";
+import { TODO_API, TODO_ITEM } from "../constant/path";
 
-const API_URL = "http://localhost:5000/api/todos";
-
-export const getTodos = () => axios.get(API_URL);
-export const addTodo = (task) => axios.post(API_URL, { task });
-export const deleteTodo = (id) => axios.delete(`${API_URL}/${id}`);
-export const updateTodo = (id, data) => axios.put(`${API_URL}/${id}`, data);
+export const getTodos = () => axios.get(TODO_API);
+export const addTodo = (task) => axios.post(TODO_API, { task });
+export const deleteTodo = (id) => axios.delete(TODO_ITEM(id));
+export const updateTodo = (id, data) => axios.put(TODO_ITEM(id), data);
